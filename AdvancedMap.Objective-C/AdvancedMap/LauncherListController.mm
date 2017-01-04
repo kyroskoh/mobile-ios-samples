@@ -23,6 +23,18 @@
 -(NSArray*) samples
 {
     return @[
+             /* Geocoding */
+             @{ @"name": @"Geocoding", @"controller": @"Header" },
+             @{ @"name": @"Offline geocoding",
+                @"description": @"Offline geocoding",
+                @"controller": @"OfflineGeocodingController"
+                },
+             
+             @{ @"name": @"Offline reverse geocoding",
+                @"description": @"Offline reverse geocoding",
+                @"controller": @"OfflineReverseGeocodingController"
+                },
+
              /* Base maps */
              @{ @"name": @"Base maps", @"controller": @"Header" },
              @{ @"name": @"Base maps",
