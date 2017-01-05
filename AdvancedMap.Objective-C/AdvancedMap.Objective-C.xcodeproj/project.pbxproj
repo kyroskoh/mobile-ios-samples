@@ -21,7 +21,7 @@
 		4D4B1F601D018C2A001C2F30 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D4B1F5F1D018C2A001C2F30 /* libz.tbd */; };
 		4D4BC84F1E1C0B9400168A23 /* OfflineReverseGeocodingController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D4BC84E1E1C0B9400168A23 /* OfflineReverseGeocodingController.mm */; };
 		4D4BC8511E1CEB0500168A23 /* estonia-latest.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 4D4BC8501E1CEB0500168A23 /* estonia-latest.sqlite */; };
-		4D4BC8531E1CFC5100168A23 /* OfflineGeocodingController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4BC8521E1CFC5100168A23 /* OfflineGeocodingController.m */; };
+		4D4BC8531E1CFC5100168A23 /* OfflineGeocodingController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D4BC8521E1CFC5100168A23 /* OfflineGeocodingController.mm */; };
 		4D94545E1A80E48D00D37B3B /* PackageManagerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4D94545D1A80E48D00D37B3B /* PackageManagerController.mm */; };
 		4DAF41AF1AD3C307004E7092 /* GroundOverlayController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4DAF41AE1AD3C307004E7092 /* GroundOverlayController.mm */; };
 		4DC850081A0E718100C5124F /* LauncherListController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4DC850071A0E718100C5124F /* LauncherListController.mm */; };
@@ -123,7 +123,7 @@
 		4D4B1F5F1D018C2A001C2F30 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4D4BC84E1E1C0B9400168A23 /* OfflineReverseGeocodingController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OfflineReverseGeocodingController.mm; sourceTree = "<group>"; };
 		4D4BC8501E1CEB0500168A23 /* estonia-latest.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; name = "estonia-latest.sqlite"; path = "../../Assets/estonia-latest.sqlite"; sourceTree = "<group>"; };
-		4D4BC8521E1CFC5100168A23 /* OfflineGeocodingController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OfflineGeocodingController.m; sourceTree = "<group>"; };
+		4D4BC8521E1CFC5100168A23 /* OfflineGeocodingController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OfflineGeocodingController.mm; sourceTree = "<group>"; };
 		4D94545D1A80E48D00D37B3B /* PackageManagerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = PackageManagerController.mm; path = AdvancedMap/PackageManagerController.mm; sourceTree = SOURCE_ROOT; };
 		4DAF41AE1AD3C307004E7092 /* GroundOverlayController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = GroundOverlayController.mm; path = AdvancedMap/GroundOverlayController.mm; sourceTree = SOURCE_ROOT; };
 		4DC850071A0E718100C5124F /* LauncherListController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = LauncherListController.mm; path = AdvancedMap/LauncherListController.mm; sourceTree = SOURCE_ROOT; };
@@ -376,8 +376,8 @@
 				AD589CE31DC0BDD3004E68B2 /* CaptureController.mm */,
 				ADC731471DBFA78D00E1CDCA /* CustomPopup */,
 				AD589CE71DC105A1004E68B2 /* GPSLocationController.m */,
+				4D4BC8521E1CFC5100168A23 /* OfflineGeocodingController.mm */,
 				4D4BC84E1E1C0B9400168A23 /* OfflineReverseGeocodingController.mm */,
-				4D4BC8521E1CFC5100168A23 /* OfflineGeocodingController.m */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -751,7 +751,7 @@
 				ADE5B9361DD5FC3D002ADD34 /* BasicPackageManagerController.mm in Sources */,
 				AD90F9471E096C6E00E6EF51 /* BaseRoutingController.mm in Sources */,
 				4D94545E1A80E48D00D37B3B /* PackageManagerController.mm in Sources */,
-				4D4BC8531E1CFC5100168A23 /* OfflineGeocodingController.m in Sources */,
+				4D4BC8531E1CFC5100168A23 /* OfflineGeocodingController.mm in Sources */,
 				4DC850121A0E7DC500C5124F /* CustomRasterDataSourceController.mm in Sources */,
 				AD443BC41DD0877E00EE65A9 /* VectorTileListener.mm in Sources */,
 				4DEB06D81A10CDC0003D111C /* BundledMapController.mm in Sources */,
