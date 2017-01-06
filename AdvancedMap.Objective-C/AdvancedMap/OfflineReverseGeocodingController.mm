@@ -23,9 +23,9 @@
 
 -(void) viewDidLoad
 {
-    NTProjection* proj = [[self.mapView getOptions] getBaseProjection];
-    self.reverseGeocodingService = [[NTOSMOfflineReverseGeocodingService alloc] initWithProjection:proj path:[NTAssetUtils calculateResourcePath:@"estonia-latest.sqlite"]];
+    self.reverseGeocodingService = [[NTOSMOfflineReverseGeocodingService alloc] initWithPath:[NTAssetUtils calculateResourcePath:@"estonia-latest.sqlite"]];
     
+    NTProjection* proj = [[self.mapView getOptions] getBaseProjection];
     self.dataSource = [[NTLocalVectorDataSource alloc] initWithProjection:proj];
     NTVectorLayer *layer = [[NTVectorLayer alloc] initWithDataSource:self.dataSource];
         

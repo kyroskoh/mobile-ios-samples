@@ -17,9 +17,9 @@
 
 -(void)viewDidLoad
 {
-    NTProjection* proj = [[self.mapView getOptions] getBaseProjection];
-    self.geocodingService = [[NTOSMOfflineGeocodingService alloc] initWithProjection:proj path:[NTAssetUtils calculateResourcePath:@"estonia-latest.sqlite"]];
+    self.geocodingService = [[NTOSMOfflineGeocodingService alloc] initWithPath:[NTAssetUtils calculateResourcePath:@"estonia-latest.sqlite"]];
     
+    NTProjection* proj = [[self.mapView getOptions] getBaseProjection];
     self.dataSource = [[NTLocalVectorDataSource alloc] initWithProjection:proj];
     NTVectorLayer *layer = [[NTVectorLayer alloc] initWithDataSource:self.dataSource];
     
@@ -126,7 +126,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
         
-        NTGeocodingRequest* request = [[NTGeocodingRequest alloc] initWithQuery:text];
+        NTGeocodingRequest* request = [[NTGeocodingRequest alloc] initWithProjection:[self.dataSource getProjection] query:text];
         
         [self.geocodingService setAutocomplete:autocomplete];
         NTGeocodingResultVector* results = [self.geocodingService calculateAddresses:request];
