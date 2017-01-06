@@ -69,6 +69,55 @@
     [self.mapView setMapEventListener:nil];
 }
 
+-(NSString*)printableAddress:(NTGeocodingResult*)result
+{
+    NTGeocodingAddress* addr = [result getAddress];
+    NSString* str = @"";
+    if ([[addr getName] length] > 0) {
+        str = [str stringByAppendingFormat:@"%@", [addr getName]];
+    }
+    if ([[addr getStreet] length] > 0) {
+        if ([str length] > 0) {
+            str = [str stringByAppendingString:@", "];
+        }
+        str = [str stringByAppendingFormat:@"%@", [addr getStreet]];
+        if ([[addr getHouseNumber] length] > 0) {
+            str = [str stringByAppendingFormat:@" %@", [addr getHouseNumber]];
+        }
+    }
+    if ([[addr getNeighbourhood] length] > 0) {
+        if ([str length] > 0) {
+            str = [str stringByAppendingString:@", "];
+        }
+        str = [str stringByAppendingFormat:@"%@", [addr getNeighbourhood]];
+    }
+    if ([[addr getLocality] length] > 0) {
+        if ([str length] > 0) {
+            str = [str stringByAppendingString:@", "];
+        }
+        str = [str stringByAppendingFormat:@"%@", [addr getLocality]];
+    }
+    if ([[addr getCounty] length] > 0) {
+        if ([str length] > 0) {
+            str = [str stringByAppendingString:@", "];
+        }
+        str = [str stringByAppendingFormat:@"%@", [addr getCounty]];
+    }
+    if ([[addr getRegion] length] > 0) {
+        if ([str length] > 0) {
+            str = [str stringByAppendingString:@", "];
+        }
+        str = [str stringByAppendingFormat:@"%@", [addr getRegion]];
+    }
+    if ([[addr getCountry] length] > 0) {
+        if ([str length] > 0) {
+            str = [str stringByAppendingString:@", "];
+        }
+        str = [str stringByAppendingFormat:@"%@", [addr getCountry]];
+    }
+    return str;
+}
+
 -(void)geocode:(NSString*)text autocomplete:(BOOL)autocomplete
 {
     [self hideGeocodingResult];
@@ -176,7 +225,7 @@
         // Show popup
         NTMapPos* pos = [geom getCenterPos];
         NSString* title = @"";
-        NSString* desc = [result description];
+        NSString* desc = [self printableAddress:result];
         NTBalloonPopup* clickPopup = [[NTBalloonPopup alloc] initWithPos:pos style:[styleBuilder buildStyle] title:title desc:desc];
         [self.dataSource add:clickPopup];
         _oldClickLabel = clickPopup;
@@ -231,8 +280,9 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:AutoCompleteRowIdentifier];
     }
     
+    NTGeocodingResult* result = [self.addresses objectAtIndex:indexPath.row];
     cell.tag = indexPath.row;
-    cell.textLabel.text = [[self.addresses objectAtIndex:indexPath.row] description];
+    cell.textLabel.text = [self printableAddress:result];
     return cell;
 }
 
