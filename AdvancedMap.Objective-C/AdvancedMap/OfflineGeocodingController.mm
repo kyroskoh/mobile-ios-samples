@@ -3,7 +3,7 @@
 
 @interface OfflineGeocodingController : MapBaseController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIGestureRecognizerDelegate>
 
-@property NTGeocodingService* geocodingService;
+@property NTOSMOfflineGeocodingService* geocodingService;
 @property NTLocalVectorDataSource* dataSource;
 @property NTVectorElement* oldGeometry;
 @property NTVectorElement* oldClickLabel;
@@ -128,7 +128,7 @@
         
         NTGeocodingRequest* request = [[NTGeocodingRequest alloc] initWithQuery:text];
         
-        // TODO: set autocomplete mode
+        [self.geocodingService setAutocomplete:autocomplete];
         NTGeocodingResultVector* results = [self.geocodingService calculateAddresses:request];
         
         NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;

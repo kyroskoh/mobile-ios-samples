@@ -3,7 +3,7 @@
 
 @interface OfflineReverseGeocodingController : MapBaseController
 
-@property NTReverseGeocodingService* reverseGeocodingService;
+@property NTOSMOfflineReverseGeocodingService* reverseGeocodingService;
 @property NTLocalVectorDataSource* dataSource;
 @property (strong, nonatomic) NTBalloonPopup* oldClickLabel;
 @property (strong, nonatomic) NTVectorElement* oldGeometry;
@@ -138,6 +138,8 @@
         NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
         
         NTReverseGeocodingRequest* request = [[NTReverseGeocodingRequest alloc] initWithProjection:[self.controller.dataSource getProjection] point:[clickInfo getClickPos]];
+        
+        [self.controller.reverseGeocodingService setSearchRadius:125.0f]; // in meters
         
         NTGeocodingResultVector* results = [self.controller.reverseGeocodingService calculateAddresses:request];
         
