@@ -5,8 +5,6 @@
 
 @property NTOSMOfflineReverseGeocodingService* reverseGeocodingService;
 @property NTLocalVectorDataSource* dataSource;
-@property (strong, nonatomic) NTBalloonPopup* oldClickLabel;
-@property (strong, nonatomic) NTVectorElement* oldGeometry;
 
 @end
 
@@ -48,17 +46,7 @@
 
 -(void)hideGeocodingResult
 {
-    // Remove old click label
-    if (_oldClickLabel)
-    {
-        [self.dataSource remove:_oldClickLabel];
-        _oldClickLabel = nil;
-    }
-    if (_oldGeometry)
-    {
-        [self.dataSource remove:_oldGeometry];
-        _oldGeometry = nil;
-    }
+    [self.dataSource clear];
 }
 
 -(void)showGeocodingResult:(NTGeocodingResult*)result position:(NTMapPos*)pos
@@ -70,8 +58,9 @@
     // Make sure this label is shown on top all other labels
     [styleBuilder setPlacementPriority:10];
     
-    NTGeometry* geom = result ? [result getGeometry] : nil;
-    if (geom) {
+    NTFeatureCollection* featureCollection = [result getFeatureCollection];
+    for (int i = 0; i < [featureCollection getFeatureCount]; i++) {
+        NTGeometry* geom = [[featureCollection getFeature:i] getGeometry];
         NTColor* color = [[NTColor alloc] initWithR:0 g:100 b:200 a:150];
         
         // Build styles for the displayed geometry
@@ -105,11 +94,13 @@
         // Show the element and pan/zoom the view to the element
         if (elem) {
             [self.dataSource add:elem];
-            _oldGeometry = elem;
             
             NTScreenBounds* screenBounds = [[NTScreenBounds alloc] initWithMin:[[NTScreenPos alloc] initWithX:10 y:10] max:[[NTScreenPos alloc] initWithX:self.mapView.drawableWidth - 20 y:self.mapView.drawableHeight - 20]];
             [self.mapView moveToFitBounds:[geom getBounds] screenBounds:screenBounds integerZoom:NO durationSeconds:0.3f];
         }
+        
+        // Use geometry center point for popup
+        pos = [geom getCenterPos];
     }
 
     // Show popup
@@ -117,7 +108,6 @@
     NSString* desc = result ? [result description] : @"No address found";
     NTBalloonPopup* clickPopup = [[NTBalloonPopup alloc] initWithPos:pos style:[styleBuilder buildStyle] title:title desc:desc];
     [self.dataSource add:clickPopup];
-    _oldClickLabel = clickPopup;
 }
 
 @end
@@ -137,13 +127,26 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
         
-        NTReverseGeocodingRequest* request = [[NTReverseGeocodingRequest alloc] initWithProjection:[self.controller.dataSource getProjection] point:[clickInfo getClickPos]];
+        NTReverseGeocodingRequest* request = [[NTReverseGeocodingRequest alloc] initWithProjection:[self.controller.dataSource getProjection] location:[clickInfo getClickPos]];
         
         [self.controller.reverseGeocodingService setSearchRadius:125.0f]; // in meters
         
         NTGeocodingResultVector* results = [self.controller.reverseGeocodingService calculateAddresses:request];
         
+        // Scan the results list. If we found relatively close point-based match,
+        // use this instead of the first result. In case of POIs within buildings,
+        // this allows us to hightlight POI instead of the building
         NTGeocodingResult* result = [results size] > 0 ? [results get:0] : nil;
+        for (int i = 0; i < [results size]; i++) {
+            NTGeocodingResult* otherResult = [results get: i];
+            if ([otherResult getRank] > 0.8f) { // 0.8f means 125 * (1.0 - 0.8) = 25 meters
+                NTGeometry* geom = [[[otherResult getFeatureCollection] getFeature:0] getGeometry];
+                if ([geom isKindOfClass:[NTPointGeometry class]]) {
+                    result = otherResult;
+                    break;
+                }
+            }
+        }
         
         NSTimeInterval duration = [NSDate timeIntervalSinceReferenceDate] - start;
         

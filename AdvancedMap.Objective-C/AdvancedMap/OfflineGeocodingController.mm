@@ -5,11 +5,10 @@
 
 @property NTOSMOfflineGeocodingService* geocodingService;
 @property NTLocalVectorDataSource* dataSource;
-@property NTVectorElement* oldGeometry;
-@property NTVectorElement* oldClickLabel;
 @property NSMutableArray* addresses;
 @property UITextField* searchField;
 @property UITableView* autocompleteTableView;
+@property int searchQueueSize;
 
 @end
 
@@ -71,7 +70,7 @@
 
 -(NSString*)printableAddress:(NTGeocodingResult*)result
 {
-    NTGeocodingAddress* addr = [result getAddress];
+    NTAddress* addr = [result getAddress];
     NSString* str = @"";
     if ([[addr getName] length] > 0) {
         str = [str stringByAppendingFormat:@"%@", [addr getName]];
@@ -123,7 +122,15 @@
     [self hideGeocodingResult];
     
     // Calculation should be in background thread
+    @synchronized (self) {
+        self.searchQueueSize++;
+    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized (self) {
+            if (--self.searchQueueSize > 0) {
+                return; // cancel the request if we have additional pending requests queued
+            }
+        }
         NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
         
         NTGeocodingRequest* request = [[NTGeocodingRequest alloc] initWithProjection:[self.dataSource getProjection] query:text];
@@ -159,17 +166,7 @@
 
 -(void)hideGeocodingResult
 {
-    // Remove old click label
-    if (_oldClickLabel)
-    {
-        [self.dataSource remove:_oldClickLabel];
-        _oldClickLabel = nil;
-    }
-    if (_oldGeometry)
-    {
-        [self.dataSource remove:_oldGeometry];
-        _oldGeometry = nil;
-    }
+    [self.dataSource clear];
 }
 
 -(void)showGeocodingResult:(NTGeocodingResult*)result
@@ -181,8 +178,10 @@
     // Make sure this label is shown on top all other labels
     [styleBuilder setPlacementPriority:10];
     
-    NTGeometry* geom = [result getGeometry];
-    if (geom) {
+    NTMapPos* pos = nil;
+    NTFeatureCollection* featureCollection = [result getFeatureCollection];
+    for (int i = 0; i < [featureCollection getFeatureCount]; i++) {
+        NTGeometry* geom = [[featureCollection getFeature:i] getGeometry];
         NTColor* color = [[NTColor alloc] initWithR:0 g:100 b:200 a:150];
         
         // Build styles for the displayed geometry
@@ -216,19 +215,20 @@
         // Show the element and pan/zoom the view to the element
         if (elem) {
             [self.dataSource add:elem];
-            _oldGeometry = elem;
             
             NTScreenBounds* screenBounds = [[NTScreenBounds alloc] initWithMin:[[NTScreenPos alloc] initWithX:10 y:10] max:[[NTScreenPos alloc] initWithX:self.mapView.drawableWidth - 20 y:self.mapView.drawableHeight - 20]];
             [self.mapView moveToFitBounds:[geom getBounds] screenBounds:screenBounds integerZoom:NO durationSeconds:0.3f];
         }
         
+        pos = [geom getCenterPos];
+    }
+    
+    if (pos) {
         // Show popup
-        NTMapPos* pos = [geom getCenterPos];
         NSString* title = @"";
         NSString* desc = [self printableAddress:result];
         NTBalloonPopup* clickPopup = [[NTBalloonPopup alloc] initWithPos:pos style:[styleBuilder buildStyle] title:title desc:desc];
         [self.dataSource add:clickPopup];
-        _oldClickLabel = clickPopup;
     }
 }
 
