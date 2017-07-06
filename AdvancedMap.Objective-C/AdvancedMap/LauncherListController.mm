@@ -63,9 +63,15 @@
                 @"description": @"Online routing with OpenStreetMap data packages",
                 @"controller": @"OnlineRoutingController"
                 },
-             @{ @"name": @"Offline Routing",
-                @"description": @"Offline routing with OpenStreetMap data packages",
-                @"controller": @"OfflineRoutingController"
+             @{ @"name": @"Offline Routing (country)",
+                @"description": @"Offline Routing where a country package (Androrra) is downloaded",
+                @"controller": @"OfflineRoutingPackageController"
+                },
+             
+//             Currently commented out, offline routing with a bbox will be available in v4.1.0
+             @{ @"name": @"Offline Routing (bbox)",
+                @"description": @"Offline Routing where a bounding box of New York is downloaded",
+                @"controller": @"OfflineRoutingBBoxController"
                 },
              
              /* Vector Objects */
