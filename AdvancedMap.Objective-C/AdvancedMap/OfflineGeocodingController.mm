@@ -9,6 +9,7 @@
 @property UITextField* searchField;
 @property UITableView* autocompleteTableView;
 @property int searchQueueSize;
+@property dispatch_queue_t queue;
 
 @end
 
@@ -57,6 +58,8 @@
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
     tap.delegate = self;
+    
+    self.queue = dispatch_queue_create("com.carto.GeocodeQueue", NULL);
     
     [self.view addGestureRecognizer:tap];
     
@@ -125,15 +128,18 @@
     @synchronized (self) {
         self.searchQueueSize++;
     }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(self.queue, ^{
         @synchronized (self) {
             if (--self.searchQueueSize > 0) {
+                NSLog(@"Geocoding: pending request, skipping");
                 return; // cancel the request if we have additional pending requests queued
             }
         }
         NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
         
         NTGeocodingRequest* request = [[NTGeocodingRequest alloc] initWithProjection:[self.dataSource getProjection] query:text];
+//        [request setLocation:[[self.dataSource getProjection] fromLat:58.383 lng:26.717]];
+//        [request setLocationRadius:100000];
         
         [self.geocodingService setAutocomplete:autocomplete];
         NTGeocodingResultVector* results = [self.geocodingService calculateAddresses:request];
@@ -297,3 +303,4 @@
 }
 
 @end
+ 

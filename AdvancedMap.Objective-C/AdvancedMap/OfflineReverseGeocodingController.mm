@@ -140,8 +140,8 @@
         for (int i = 0; i < [results size]; i++) {
             NTGeocodingResult* otherResult = [results get: i];
             if ([otherResult getRank] > 0.9f) { // 0.8f means 125 * (1.0 - 0.9) = 12.5 meters
-                NTGeometry* geom = [[[otherResult getFeatureCollection] getFeature:0] getGeometry];
-                if ([geom isKindOfClass:[NTPointGeometry class]]) {
+                NSString* name = [[otherResult getAddress] getName];
+                if (name && ![name isEqualToString:@""]) {
                     result = otherResult;
                     break;
                 }
